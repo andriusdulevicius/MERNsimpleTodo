@@ -20,11 +20,18 @@ const todoApi = require('./api/todoApi');
 app.use('/', todoApi);
 
 const rootBuild = path.join(__dirname, 'client', 'build');
+console.log(rootBuild);
+
 //pasitikrinti ar musu aplinka yra production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(rootBuild));
 }
 
+//visas srautas nukreipiamas per produkcijos sukurta index.html
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join('index.html', { root: rootBuild }));
+});
 // prisijungimas prie duomenu bazes
 mongoose
   .connect(process.env.MONGO_CONN_STRING || mongoDbString, {
@@ -33,6 +40,6 @@ mongoose
   })
   .then((result) => {
     console.log('Conneced to Mongo ooooooooose');
-    app.listen(PORT, console.log(`backEnd ondline on port ${PORT}`));
+    app.listen(PORT, console.log(`backEnd online on port ${PORT}`));
   })
   .catch((err) => console.error(err.message));
